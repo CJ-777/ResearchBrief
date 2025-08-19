@@ -8,7 +8,10 @@ import json
 
 # Initialize OpenAI LLM
 llm = ChatOpenAI(
-    model_name="gpt-3.5-turbo", temperature=0, openai_api_key=settings.openai_api_key
+    model_name="gpt-oss-20b",
+    openai_api_base="https://openrouter.ai/api/v1",
+    openai_api_key=settings.openrouter_api_key,
+    temperature=0,
 )
 
 # Pydantic parser for schema enforcement
@@ -25,12 +28,11 @@ Topic of current query: {topic}
 Here is the recent user history (past briefs):
 {history}
 
-Please extract:
-- A list of distinct topics recently studied
-- The most recent findings or theses (short summaries)
-- Outstanding open research questions that remain unresolved
-
-Output must strictly match the ContextSummary schema.
+Output must be valid JSON with the following fields::
+- user_id: (string) use the same user id used in context
+- topics: (list of strings) A list of distinct topics recently studied
+- recent_findings: (list of strings) The most recent findings or theses (short summaries)
+- outstanding_questions: (list of strings) Outstanding open research questions that remain unresolved
 """
 )
 

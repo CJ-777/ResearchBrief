@@ -1,15 +1,18 @@
-from langchain_community.chat_models import ChatOpenAI
+from langchain.chat_models import ChatOpenAI
 from langchain.prompts import ChatPromptTemplate
 from langchain.output_parsers import PydanticOutputParser
 from src.app.schemas import ResearchPlan
 from src.settings import settings
 
-# Initialize OpenAI LLM
+# Initialize OpenRouter LLM with GPT-OSS-20B
 llm = ChatOpenAI(
-    model_name="gpt-3.5-turbo", temperature=0, openai_api_key=settings.openai_api_key
+    model_name="gpt-oss-20b",
+    openai_api_base="https://openrouter.ai/api/v1",
+    openai_api_key=settings.openrouter_api_key,
+    temperature=0,
 )
 
-# Use Pydantic parser to enforce schema
+# Pydantic parser to enforce schema
 parser = PydanticOutputParser(pydantic_object=ResearchPlan)
 
 # Prompt template
@@ -19,7 +22,15 @@ prompt_template = ChatPromptTemplate.from_template(
 Topic: {topic}
 Depth: {depth} (1-5)
 
-Output must match the ResearchPlan schema strictly.
+Output must be valid JSON with the following fields::
+- topic: (string)
+- depth: (integer)
+- steps: list of objects with keys:
+    - objective: (string) objective of the step
+    - rationale: (string) rationale behind chosing the step
+    - method: (string)
+
+method can be of following type [search, implement, perform].
 """
 )
 
@@ -27,7 +38,6 @@ Output must match the ResearchPlan schema strictly.
 def make_plan(topic: str, depth: int) -> ResearchPlan:
     prompt = prompt_template.format_prompt(topic=topic, depth=depth)
     response = llm(prompt.to_messages())
-
     # Parse and validate output
     plan = parser.parse(response.content)
     return plan

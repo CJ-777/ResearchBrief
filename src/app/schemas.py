@@ -17,14 +17,13 @@ class ResearchPlan(BaseModel):
 
 
 class SourceDoc(BaseModel):
-    url: str # allow any string in mock step
+    url: str
     title: Optional[str] = None
     fetched_at: datetime
     raw_text: str = Field(min_length=40)
 
 
 class SourceSummary(BaseModel):
-    url: str
     title: Optional[str]
     key_points: List[str]
     evidence_quotes: List[str]
