@@ -2,6 +2,7 @@ fastapi
 uvicorn[standard]
 typer
 pydantic>=2
+pydantic-settings
 langchain>=0.2.10
 langgraph>=0.2.22
 langchain-openai
@@ -10,8 +11,9 @@ langsmith
 httpx
 beautifulsoup4
 lxml
+langchain-community
 # choose one search provider later
 # tavily-python
-# google-search-results
+google-search-results
 pytest
 pytest-asyncio
