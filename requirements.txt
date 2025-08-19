@@ -1,0 +1,17 @@
+fastapi
+uvicorn[standard]
+typer
+pydantic>=2
+langchain>=0.2.10
+langgraph>=0.2.22
+langchain-openai
+langchain-anthropic
+langsmith
+httpx
+beautifulsoup4
+lxml
+# choose one search provider later
+# tavily-python
+# google-search-results
+pytest
+pytest-asyncio
