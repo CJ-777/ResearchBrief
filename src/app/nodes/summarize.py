@@ -25,7 +25,7 @@ Source URL: {url}
 Title: {title}
 Text: {text}
 
-Ignore all documents stating error of any kind like 'error 403', dont process them.
+Ignore all documents stating an error of any kind (e.g., 'error 403').
 
 Output MUST be valid JSON with the following fields:
 - title: (string) use document title
@@ -38,7 +38,12 @@ Output MUST be valid JSON with the following fields:
 
 @retry(max_retries=3, delay=2)
 def summarize_sources(docs: List[SourceDoc]) -> List[SourceSummary]:
-    summaries = []
+    """
+    Generate structured summaries for a list of source documents.
+    Skips documents with fetch errors or very short content.
+    """
+    summaries: List[SourceSummary] = []
+
     valid_docs = [
         doc
         for doc in docs
@@ -46,11 +51,13 @@ def summarize_sources(docs: List[SourceDoc]) -> List[SourceSummary]:
         and len(doc.raw_text.strip()) > 40
         and "Failed to fetch" not in doc.raw_text
     ]
+
     for doc in valid_docs:
         prompt = prompt_template.format_prompt(
             url=doc.url, title=doc.title or doc.url, text=doc.raw_text
         )
         response = llm(prompt.to_messages())
-        summary = parser.parse(response.content)
+        summary: SourceSummary = parser.parse(response.content)
         summaries.append(summary)
+
     return summaries

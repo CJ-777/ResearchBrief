@@ -1,4 +1,7 @@
-# api/main.py
+# Exposes the application through FastAPI
+# Command to deploy: 
+
+
 from fastapi import FastAPI, HTTPException
 from pydantic import BaseModel
 from src.app.graphs import build_graph
@@ -7,7 +10,7 @@ from src.app.schemas import FinalBrief
 
 app = FastAPI(title="Research Brief Generator")
 
-# build the graph once at startup
+# Build the graph once at startup
 graph = build_graph()
 
 
@@ -20,16 +23,20 @@ class BriefRequest(BaseModel):
 
 @app.post("/brief", response_model=FinalBrief)
 async def generate_brief(req: BriefRequest):
+    """
+    Generate a research brief for a given topic and user.
+    """
     try:
-        # initialize state
         state = GraphState(
             user_id=req.user_id,
             topic=req.topic,
             depth=req.depth,
             follow_up=req.follow_up,
         )
-        # run graph execution
         result = await graph.ainvoke(state)
-        return result["brief"]
+        brief = result.get("brief")
+        if not brief:
+            raise HTTPException(status_code=404, detail="No brief generated.")
+        return brief
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))

@@ -1,19 +1,28 @@
-fastapi
-uvicorn[standard]
-typer
-pydantic>=2
-pydantic-settings
-langchain>=0.2.10
-langgraph>=0.2.22
-langchain-openai
-langchain-anthropic
-langsmith
-httpx
-beautifulsoup4
-lxml
-langchain-community
-# choose one search provider later
-# tavily-python
-google-search-results
-pytest
-pytest-asyncio
+# Core
+fastapi>=0.116
+pydantic>=2.11
+pydantic-settings>=2.10
+python-dotenv>=1.1
+requests>=2.32
+beautifulsoup4>=4.13
+tqdm>=4.67
+
+# LangChain ecosystem
+langchain>=0.3
+langchain-community>=0.3
+langchain-openai>=0.3
+langchain-anthropic>=0.3
+
+# LangGraph / workflow orchestration
+langgraph>=0.6
+langsmith>=0.4
+
+# LLM / OpenAI
+openai>=1.100
+
+# Search tools
+google_search_results>=2.4
+httpx>=0.28
+
+# Async server
+uvicorn>=0.35

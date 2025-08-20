@@ -28,25 +28,25 @@ Context: {context}
 Summaries:
 {summaries}
 
-generate a thesis with valid sections and 
+Generate a thesis with valid sections.
 
-Output must be valid JSON with the following fields::
+Output must be valid JSON with the following fields:
 - topic: string
 - depth: integer
 - context_used: object with keys:
-    - user_id: (string) use the same user id used in context
-    - topics: (list of strings) A list of distinct topics recently studied
-    - recent_findings: (list of strings) The most recent findings or theses (short summaries)
-    - outstanding_questions: (list of strings) Outstanding open research questions that remain unresolved
-- thesis: (string) thesis based on the summaries
-- sections: (list of dicts) sections in the thesis with the following keys:
-    - title: (string) title of section
-    - content: (string) content of section
-- limitations: (list of strings) limitations of the thesis
-- references: (list of dicts) with the following keys:
-    - title: (string) title of reference used
-    - url: (string) url for the reference
-    - author: (string) names of authors
+    - user_id: string
+    - topics: list of strings
+    - recent_findings: list of strings
+    - outstanding_questions: list of strings
+- thesis: string
+- sections: list of dicts with keys:
+    - title: string
+    - content: string
+- limitations: list of strings
+- references: list of dicts with keys:
+    - title: string
+    - url: string
+    - author: string
 """
 )
 
@@ -58,11 +58,16 @@ def synthesize(
     summaries: List[SourceSummary],
     ctx: Optional[ContextSummary],
 ) -> FinalBrief:
+    """
+    Generate a structured research brief (FinalBrief) from source summaries and optional context.
+    """
     # Prepare summaries text
-    summaries_text = ""
-    for s in summaries:
-        summaries_text += f"Title: {s.title}\nKey Points: {s.key_points}\nQuotes: {s.evidence_quotes}\n"
+    summaries_text = "\n".join(
+        f"Title: {s.title}\nKey Points: {s.key_points}\nQuotes: {s.evidence_quotes}\n"
+        for s in summaries
+    )
 
+    # Convert context to string
     context_text = str(ctx.dict()) if ctx else "None"
 
     # Format prompt
@@ -74,5 +79,5 @@ def synthesize(
     response = llm(prompt.to_messages())
 
     # Parse and validate output
-    brief = parser.parse(response.content)
+    brief: FinalBrief = parser.parse(response.content)
     return brief

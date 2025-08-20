@@ -7,11 +7,11 @@ from .schemas import ResearchPlan, SourceDoc, SourceSummary, FinalBrief, Context
 class GraphState(BaseModel):
     user_id: str
     topic: str
-    depth: int
-    follow_up: bool
+    depth: int = 2
+    follow_up: bool = False
     plan: Optional[ResearchPlan] = None
     context: Optional[ContextSummary] = None
-    search_queries: List[str] = Field(default_factory=list)
+    search_queries: List[str] = Field(default_factory=list)             # default_factory used to provide fresh lists to each instance
     urls: List[str] = Field(default_factory=list)
     docs: List[SourceDoc] = Field(default_factory=list)
     summaries: List[SourceSummary] = Field(default_factory=list)

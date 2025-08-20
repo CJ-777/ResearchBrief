@@ -1,4 +1,6 @@
-# cli/main.py
+# CLI implementation for the project
+# Command to run: python -m cli.main --user-id <user_id> --topic <topic> --depth <depth> --follow-up (optional)
+
 import argparse
 import asyncio
 import json
@@ -21,22 +23,15 @@ def parse_args():
 
 async def main():
     args = parse_args()
-
-    # Build the graph once
     graph = build_graph()
-
-    # Initialize state
     state = GraphState(
         user_id=args.user_id,
         topic=args.topic,
         depth=args.depth,
         follow_up=args.follow_up,
     )
-
-    # Run the graph asynchronously
     result = await graph.ainvoke(state)
 
-    # Print the final brief as pretty JSON
     brief = result.get("brief")
     if brief:
         print(json.dumps(brief.model_dump(), indent=2, default=str))

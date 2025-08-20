@@ -8,8 +8,6 @@ from .nodes.summarize import summarize_sources
 from .nodes.synthesize import synthesize
 from .nodes.postprocess import validate_and_fix
 from .store.history import save_brief
-from src.settings import settings
-import openai
 from langsmith import traceable
 from dotenv import load_dotenv
 
@@ -17,7 +15,12 @@ load_dotenv(dotenv_path=".env", override=True)
 
 
 @traceable
-def build_graph():
+def build_graph() -> StateGraph:
+    """
+    Build and compile the full LangGraph workflow for research brief generation.
+    Nodes:
+        context -> plan -> search -> fetch -> summarize -> synthesize -> postprocess -> END
+    """
     g = StateGraph(GraphState)
 
     @traceable
@@ -48,9 +51,9 @@ def build_graph():
 
     @traceable
     def _summarize(state: GraphState):
-        sums = summarize_sources(state.docs)
-        state.summaries = sums
-        return {"summaries": sums}
+        summaries = summarize_sources(state.docs)
+        state.summaries = summaries
+        return {"summaries": summaries}
 
     @traceable
     def _synthesize(state: GraphState):
@@ -59,22 +62,22 @@ def build_graph():
         return {"brief": brief}
 
     @traceable
-    def _post(state: GraphState):
-        fixed = validate_and_fix(state.brief)
-        state.brief = fixed
-        save_brief(state.user_id, fixed)
-        return {"brief": fixed}
+    def _postprocess(state: GraphState):
+        fixed_brief = validate_and_fix(state.brief)
+        state.brief = fixed_brief
+        save_brief(state.user_id, fixed_brief)
+        return {"brief": fixed_brief}
 
-    # Add nodes to graph
+    # Add nodes
     g.add_node("context", _context)
     g.add_node("plan", _plan)
     g.add_node("search", _search)
     g.add_node("fetch", _fetch)
     g.add_node("summarize", _summarize)
     g.add_node("synthesize", _synthesize)
-    g.add_node("postprocess", _post)
+    g.add_node("postprocess", _postprocess)
 
-    # Define edges
+    # Define graph flow
     g.set_entry_point("context")
     g.add_edge("context", "plan")
     g.add_edge("plan", "search")

@@ -7,50 +7,45 @@ from src.app.schemas import SourceDoc
 
 def fetch_docs(urls: List[str]) -> List[SourceDoc]:
     """
-    Fetch real web content from a list of URLs.
+    Fetch web content from a list of URLs and return structured SourceDoc objects.
     """
     now = datetime.utcnow()
-    docs = []
+    docs: List[SourceDoc] = []
 
-    for u in urls:
+    for url in urls:
         try:
-            response = requests.get(u, timeout=10)
+            response = requests.get(url, timeout=10)
             response.raise_for_status()
 
             soup = BeautifulSoup(response.text, "html.parser")
 
             # Extract title
             title = (
-                soup.title.string.strip() if soup.title else u.split("/")[-1].title()
+                soup.title.string.strip()
+                if soup.title
+                else url.split("/")[-1].replace("-", " ").title()
             )
 
-            # Extract text (limit length for efficiency)
-            paragraphs = [p.get_text() for p in soup.find_all("p")]
-            raw_text = " ".join(paragraphs)
-            raw_text = raw_text.strip()
+            # Extract text content
+            paragraphs = [p.get_text(strip=True) for p in soup.find_all("p")]
+            raw_text = " ".join(paragraphs).strip()
 
-            if len(raw_text) < 40:  # Ensure it passes schema validation
-                raw_text = (
-                    f"Content too short at {u}. " f"Fetched minimal text at {now}."
-                )
+            # Ensure minimum content for schema validation
+            if len(raw_text) < 40:
+                raw_text = f"Content too short at {url}. Fetched minimal text at {now}."
 
             docs.append(
-                SourceDoc(
-                    url=u,
-                    title=title,
-                    fetched_at=now,
-                    raw_text=raw_text,
-                )
+                SourceDoc(url=url, title=title, fetched_at=now, raw_text=raw_text)
             )
 
         except Exception as e:
-            # fallback doc for failed fetch
+            # Fallback document for failed fetch
             docs.append(
                 SourceDoc(
-                    url=u,
-                    title=f"Error fetching {u}",
+                    url=url,
+                    title=f"Error fetching {url}",
                     fetched_at=now,
-                    raw_text=f"Failed to fetch {u}: {str(e)}",
+                    raw_text=f"Failed to fetch {url}: {str(e)}",
                 )
             )
 
