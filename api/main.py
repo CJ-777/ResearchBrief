@@ -1,5 +1,5 @@
 # Exposes the application through FastAPI
-# Command to deploy: 
+# Command to deploy:
 
 
 from fastapi import FastAPI, HTTPException
@@ -7,6 +7,7 @@ from pydantic import BaseModel
 from src.app.graphs import build_graph
 from src.app.state import GraphState
 from src.app.schemas import FinalBrief
+from fastapi.responses import RedirectResponse
 
 app = FastAPI(title="Research Brief Generator")
 
@@ -40,3 +41,8 @@ async def generate_brief(req: BriefRequest):
         return brief
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
+
+
+@app.get("/", include_in_schema=False)
+async def root():
+    return {"message": "FastAPI app is live!"}
