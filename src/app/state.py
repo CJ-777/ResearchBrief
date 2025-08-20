@@ -1,6 +1,6 @@
 from __future__ import annotations
 from typing import List, Optional
-from pydantic import BaseModel
+from pydantic import BaseModel, Field
 from .schemas import ResearchPlan, SourceDoc, SourceSummary, FinalBrief, ContextSummary
 
 
@@ -11,11 +11,8 @@ class GraphState(BaseModel):
     follow_up: bool
     plan: Optional[ResearchPlan] = None
     context: Optional[ContextSummary] = None
-    search_queries: List[str] = []
-    urls: List[str] = []
-    docs: List[SourceDoc] = []
-    summaries: List[SourceSummary] = []
+    search_queries: List[str] = Field(default_factory=list)
+    urls: List[str] = Field(default_factory=list)
+    docs: List[SourceDoc] = Field(default_factory=list)
+    summaries: List[SourceSummary] = Field(default_factory=list)
     brief: Optional[FinalBrief] = None
-
-
-CHECKPOINT_NSTAG = "research-briefs" # placeholder; real checkpointer in Step 2
