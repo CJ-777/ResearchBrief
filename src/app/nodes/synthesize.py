@@ -6,13 +6,18 @@ from src.app.schemas import SourceSummary, FinalBrief, ContextSummary
 from src.settings import settings
 from utils.retries import retry
 
-# Initialize LLM
+# Initialize OpenRouter/OpenAI LLM
 llm = ChatOpenAI(
     model_name="gpt-oss-20b",
     openai_api_base="https://openrouter.ai/api/v1",
     openai_api_key=settings.openrouter_api_key,
     temperature=0,
 )
+# llm = ChatOpenAI(
+#     model="gpt-4o-mini",
+#     api_key=settings.openai_api_key,
+#     temperature=0,
+# )
 
 # Pydantic parser for structured FinalBrief output
 parser = PydanticOutputParser(pydantic_object=FinalBrief)

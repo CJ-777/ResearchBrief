@@ -14,6 +14,11 @@ llm = ChatOpenAI(
     openai_api_key=settings.openrouter_api_key,
     temperature=0,
 )
+# llm = ChatOpenAI(
+#     model="gpt-4o-mini",
+#     api_key=settings.openai_api_key,
+#     temperature=0,
+# )
 
 # Pydantic parser for schema enforcement
 parser = PydanticOutputParser(pydantic_object=ContextSummary)
