@@ -3,6 +3,7 @@ from langchain.prompts import ChatPromptTemplate
 from langchain.output_parsers import PydanticOutputParser
 from src.app.schemas import ResearchPlan
 from src.settings import settings
+from utils.retries import retry
 
 # Initialize OpenRouter LLM with GPT-OSS-20B
 llm = ChatOpenAI(
@@ -35,6 +36,7 @@ method can be of following type [search, implement, perform].
 )
 
 
+@retry(max_retries=3, delay=2)
 def make_plan(topic: str, depth: int) -> ResearchPlan:
     prompt = prompt_template.format_prompt(topic=topic, depth=depth)
     response = llm(prompt.to_messages())

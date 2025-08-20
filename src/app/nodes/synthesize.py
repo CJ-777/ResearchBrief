@@ -4,6 +4,7 @@ from langchain.prompts import ChatPromptTemplate
 from langchain.output_parsers import PydanticOutputParser
 from src.app.schemas import SourceSummary, FinalBrief, ContextSummary
 from src.settings import settings
+from utils.retries import retry
 
 # Initialize LLM
 llm = ChatOpenAI(
@@ -50,6 +51,7 @@ Output must be valid JSON with the following fields::
 )
 
 
+@retry(max_retries=3, delay=2)
 def synthesize(
     topic: str,
     depth: int,

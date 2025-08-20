@@ -4,6 +4,7 @@ from langchain.prompts import ChatPromptTemplate
 from langchain.output_parsers import PydanticOutputParser
 from src.app.schemas import SourceDoc, SourceSummary
 from src.settings import settings
+from utils.retries import retry
 
 # Initialize LLM
 llm = ChatOpenAI(
@@ -35,6 +36,7 @@ Output MUST be valid JSON with the following fields:
 )
 
 
+@retry(max_retries=3, delay=2)
 def summarize_sources(docs: List[SourceDoc]) -> List[SourceSummary]:
     summaries = []
     valid_docs = [

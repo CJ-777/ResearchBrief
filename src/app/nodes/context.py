@@ -5,6 +5,7 @@ from src.app.schemas import ContextSummary, FinalBrief
 from src.app.store.history import load_user_history
 from src.settings import settings
 import json
+from utils.retries import retry
 
 # Initialize OpenAI LLM
 llm = ChatOpenAI(
@@ -37,6 +38,7 @@ Output must be valid JSON with the following fields::
 )
 
 
+@retry(max_retries=3, delay=2)
 def summarize_context(user_id: str, topic: str) -> ContextSummary:
     # Load last 10 briefs
     history: list[FinalBrief] = load_user_history(user_id, limit=10)
