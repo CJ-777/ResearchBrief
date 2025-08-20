@@ -113,7 +113,7 @@ No Docker or Makefiles are required due to Railway’s reproducibility.
 
 ---
 
-## Demonstration
+## Usage
 
 ### CLI Usage
 
@@ -139,12 +139,6 @@ python -m cli.main --user-id <user_id> --topic <topic> --depth <depth> [--follow
   "follow_up": false,
   "user_id": "string"
 }
-```
-
-### Demo Video
-
-```
-[Insert Google Drive demo video link here]
 ```
 
 ---
